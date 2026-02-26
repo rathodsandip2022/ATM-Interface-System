@@ -1,0 +1,151 @@
+import java.util.Scanner;
+
+// ----------- Bank Account Class -----------
+class BankAccount {
+
+    private double balance;
+    private final int pin = 1234;
+    private final String accountHolder = "Sandip Rathod";
+
+    BankAccount(double initialBalance) {
+        balance = initialBalance;
+    }
+
+    String getAccountHolder() {
+        return accountHolder;
+    }
+
+    boolean validatePin(int enteredPin) {
+        return enteredPin == pin;
+    }
+
+    void deposit(double amount) {
+        if(amount > 0) {
+            balance += amount;
+            System.out.println("\nAmount Deposited Successfully!");
+        } else {
+            System.out.println("\nInvalid Amount!");
+        }
+    }
+
+    void withdraw(double amount) {
+        if(amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println("\nPlease Collect Your Cash!");
+        } else {
+            System.out.println("\nInsufficient Balance!");
+        }
+    }
+
+    void checkBalance() {
+        System.out.println("\nCurrent Balance: " + balance);
+    }
+}
+
+
+// ----------- ATM Class -----------
+class ATM {
+
+    private BankAccount account;
+
+    ATM(BankAccount account) {
+        this.account = account;
+    }
+
+    void startATM() {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("\n====================================");
+        System.out.println("        Your Card is Recognized");
+        System.out.println("        Welcome " + account.getAccountHolder());
+        System.out.println("====================================\n");
+
+        int enteredPin;
+        int attempts = 0;
+        boolean accessGranted = false;
+
+        while(attempts < 3) {
+            System.out.print("Enter Your ATM PIN: ");
+            enteredPin = sc.nextInt();
+
+            if(account.validatePin(enteredPin)) {
+                accessGranted = true;
+                System.out.println("\nYour PIN is Verified Successfully!");
+                break;
+            } else {
+                attempts++;
+                System.out.println("Wrong PIN! Attempts Left: " + (3 - attempts) + "\n");
+            }
+        }
+
+        if(!accessGranted) {
+            System.out.println("\nCard Blocked! Too Many Wrong Attempts.");
+            return;
+        }
+
+        int choice;
+
+        do {
+            System.out.println("\n----------- ATM MENU -----------");
+            System.out.println("1. Check Balance");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Exit");
+            System.out.println("--------------------------------");
+
+            System.out.print("Enter Your Choice: ");
+            choice = sc.nextInt();
+
+            switch(choice) {
+
+                case 1:
+                    account.checkBalance();
+                    break;
+
+                case 2:
+                    System.out.print("\nEnter Amount to Deposit: ");
+                    double dep = sc.nextDouble();
+                    account.deposit(dep);
+                    break;
+
+                case 3:
+                    System.out.print("\nEnter Amount to Withdraw: ");
+                    double with = sc.nextDouble();
+                    account.withdraw(with);
+                    break;
+
+                case 4:
+                    System.out.println("\nThank You for Using ATM, " 
+                                       + account.getAccountHolder() + "!");
+                    break;
+
+                default:
+                    System.out.println("\nInvalid Choice!");
+            }
+
+        } while(choice != 4);
+    }
+}
+
+
+// ----------- Main Class -----------
+public class ATMInterface {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("====================================");
+        System.out.println("        ATM INTERFACE SYSTEM");
+        System.out.println("====================================\n");
+
+        System.out.print("Enter Initial Account Balance: ");
+        double initialAmount = sc.nextDouble();
+
+        BankAccount userAccount = new BankAccount(initialAmount);
+        ATM atmMachine = new ATM(userAccount);
+
+        atmMachine.startATM();
+    }
+}
